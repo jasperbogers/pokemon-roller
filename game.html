@@ -8,7 +8,7 @@
 <script>
   
   // CONSTANTEN
-  var CANVAS_BREEDTE = 800;
+  var CANVAS_BREEDTE = 1024;
   var CANVAS_HOOGTE = 600;
   var NANONAUT_BREEDTE = 245 // 181;
   var NANONAUT_HOOGTE = 236;
@@ -25,9 +25,8 @@
   var ROBOT_HOOGTE = 139;
   var ROBOT_NR_ANIMATIEFRAMES = 9;
   var ROBOT_ANIMATIESNELHEID = 5;
-  var ROBOT_X_SNELHEID = 1;
-  var MIN_AFSTAND_TUSSEN_ROBOTS = 100;
-  var MAX_AFSTAND_TUSSEN_ROBOTS = 1200;
+  var MIN_AFSTAND_TUSSEN_ROBOTS = 500;
+  var MAX_AFSTAND_TUSSEN_ROBOTS = 1400;
   var MAX_ACTIEVE_ROBOTS = 3;
   var SCHERMSCHUD_RADIUS = 16;
   var NANONAUT_MAX_GEZONDHEID = 50;
@@ -89,15 +88,14 @@
     breedte: 50,
     hoogte: 100
   };
-  
+
+  var robotXSnelheid = 1;
   var nanonautYSnelheid = 0;
   var nanonautIsInDeLucht = false;
   var spatiebalkIsIngedrukt = false;
   var nanonautFrameNr = 0;
   var spelFrameTeller = 0;
   var bosjesData = genereerBosjes();
-  var bosjeYCoordinaten = [100, 80, 90, 85];
-  var eenBosje = { x: 500, y: 100 };
   var schermschudden = false;
   var nanonautGezondheid = NANONAUT_MAX_GEZONDHEID;
   var spelModus = GAME_OVER_SPELMODUS; //SPEEL_SPELMODUS;
@@ -110,6 +108,30 @@
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
   window.addEventListener('load', start);
+  
+  function init() {
+    robotXSnelheid = 1;
+    nanonautX = CANVAS_BREEDTE / 2;
+    nanonautY = GROND_Y - NANONAUT_HOOGTE;
+    nanonautYSnelheid = 0;
+    nanonautIsInDeLucht = false;
+    spatiebalkIsIngedrukt = false;
+    nanonautFrameNr = 0;
+    spelFrameTeller = 0;
+    bosjesData = genereerBosjes();
+    schermschudden = false;
+    nanonautGezondheid = NANONAUT_MAX_GEZONDHEID;
+    spelModus = SPEEL_SPELMODUS;
+  
+    robotData = [{
+      x: 400,
+      y: GROND_Y - ROBOT_HOOGTE,
+      frameNr: 0
+    }];
+    
+    cameraX = 0;
+    cameraY = 0;
+  }
   
   function start() {
     window.requestAnimationFrame(hoofdLus);
@@ -155,7 +177,7 @@
       spatiebalkIsIngedrukt = false;
     }
     if (event.keyCode === S_CODE) {
-      spelModus = SPEEL_SPELMODUS;
+      init();
       toggleAudio();
     }
   }
@@ -164,7 +186,7 @@
   function toggleAudio() {
     if (audioStaatUit) {
       audioStaatUit = false;
-      playSID('music/Shadow_of_the_Beast.sid',2);
+      //playSID('music/Shadow_of_the_Beast.sid',2);
     }
   }
   
@@ -211,7 +233,7 @@
     var nanonautBotsteOpEenRobot = updateRobots();
     if (nanonautBotsteOpEenRobot) {
       schermschudden = true;
-      if (nanonautGezondheid > 0) nanonautGezondheid -= 1;
+      if (nanonautGezondheid > 0) nanonautGezondheid -= 2;
     }
     
     // Controleer of spel game over is.
@@ -224,6 +246,7 @@
   function updateRobots() {
     // Verplaats en animeer robots en controleer op botsingen met Nanonaut.
     var nanonautBotsteOpEenRobot = false;
+    robotXSnelheid = (nanonautX / 10000) + 1;
     for (var i=0; i<robotData.length; i++) {
       if (overlappenNanonautRobot(
           nanonautX + nanonautBotsingsRechthoek.xOffset,
@@ -237,7 +260,7 @@
       )){
         nanonautBotsteOpEenRobot = true;
       }
-      robotData[i].x -= ROBOT_X_SNELHEID;
+      robotData[i].x -= robotXSnelheid;
       if ((spelFrameTeller % ROBOT_ANIMATIESNELHEID) === 0) {
         robotData[i].frameNr = robotData[i].frameNr + 1;
         if (robotData[i].frameNr >= ROBOT_NR_ANIMATIEFRAMES) {
@@ -336,15 +359,19 @@
     
     // Laat de afstand zien die de Nanonaut heeft afgelegd.
     var nanonautAfstand = nanonautX / 100;
-    c.fillStyle = 'black'
+    c.fillStyle = 'black';
     c.font = '48px sans-serif';
     c.fillText(nanonautAfstand.toFixed(0) + 'm', 20, 40);
     
+    // Laat het level zien
+    c.fillText('Level ' + robotXSnelheid.toFixed(0), 200, 40);
+    
+        robotXSnelheid
     // Teken de levensbalk.
     c.fillStyle = 'red';
-    c.fillRect(400, 10, nanonautGezondheid / NANONAUT_MAX_GEZONDHEID * 380, 20);
+    c.fillRect(600, 10, nanonautGezondheid / NANONAUT_MAX_GEZONDHEID * 380, 20);
     c.strokeStyle = 'red';
-    c.strokeRect(400, 10, 380, 20);
+    c.strokeRect(600, 10, 380, 20);
     
     // Laat 'GAME OVER' zien als de game voorbij is.
     if (spelModus == GAME_OVER_SPELMODUS) {
