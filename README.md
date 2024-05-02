@@ -8,6 +8,10 @@ Furthermore, I tweaked the game to have some difficulty progression.
 
 You can download the game, figure out a way to host it (I suggested AWS S3 with static website hosting), open `game.html` in your browser and off you go!
 
+# Play the game
+
+Go to https://jasperbogers.github.io/pokemon-roller/game.html and press space like a madman!
+
 # credits
 
 Original game: "Nanonauten in actie" by Clyde Hatter for Coderdojo (http://www.nano-tips.com/volledigecode/).
