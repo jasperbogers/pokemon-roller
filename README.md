@@ -8,10 +8,6 @@ Furthermore, I tweaked the game to have some difficulty progression.
 
 You can download the game, figure out a way to host it (I suggested AWS S3 with static website hosting), open `game.html` in your browser and off you go!
 
-# demo
-
-A playable version of the game is deployed as a static website on AWS S3 at https://homebrew-games.s3.eu-central-1.amazonaws.com/game.html
-
 # credits
 
 Original game: "Nanonauten in actie" by Clyde Hatter for Coderdojo (http://www.nano-tips.com/volledigecode/).
